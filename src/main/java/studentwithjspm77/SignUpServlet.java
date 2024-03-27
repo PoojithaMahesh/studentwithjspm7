@@ -35,7 +35,7 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws S
 	boolean value=true;
 	
 	for(Student st:students) {
-		if(email.equals(student.getEmail())) {
+		if(email.equals(st.getEmail())) {
 			value=false;
 			break;
 		}
@@ -43,11 +43,13 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws S
 	if(value) {
 //		this student email is not present in the database
 		dao.saveStudent(student);
-		PrintWriter printWriter=resp.getWriter();
-		printWriter.print("Signed up successfully");
+		req.setAttribute("message", "SignedUpsuccessfully please login");
+		RequestDispatcher dispatcher=req.getRequestDispatcher("login.jsp");
+		dispatcher.forward(req, resp);
 		
 	}else {
 //		email is present in the database
+		req.setAttribute("message", "Sorry Email already exist please give anothe email");
 		RequestDispatcher dispatcher=req.getRequestDispatcher("signup.jsp");
 		dispatcher.include(req, resp);
 	}
