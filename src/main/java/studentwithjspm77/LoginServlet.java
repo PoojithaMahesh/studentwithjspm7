@@ -7,9 +7,11 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import studentwithjspm77.dao.StudentDao;
 import studentwithjspm77.dto.Student;
@@ -24,10 +26,12 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws S
 	List<Student> list=dao.getAllStudents();
 	boolean value=false;
 	String dbPassword=null;
+	String studentwhologgedin=null;
 	
 	for(Student student:list) {
 		if(email.equals(student.getEmail())) {
 			value=true;
+			studentwhologgedin=student.getName();
 			dbPassword=student.getPassword();
 			break;
 		}
@@ -37,6 +41,16 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws S
 //		email is present on the database
 		if(password.equals(dbPassword)) {
 //			login success
+			
+//			Create a Cookie
+			Cookie cookie=new Cookie("studentnamewhologgein", studentwhologgedin);
+			resp.addCookie(cookie);
+//			Create a HTTPSESSION
+			HttpSession httpSession=req.getSession();
+			httpSession.setAttribute("studentwhologgedIn", studentwhologgedin);
+			
+			
+			
 			req.setAttribute("students", list);
 			RequestDispatcher dispatcher=req.getRequestDispatcher("display.jsp");
 			dispatcher.forward(req, resp);

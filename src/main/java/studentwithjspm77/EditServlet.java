@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,6 +27,19 @@ protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws S
 	
 	StudentDao dao=new StudentDao();
 	dao.updateStudent(student);
+	
+	String nameofthestudentwhochangedthedetails=null;
+	
+	Cookie[] cookies=req.getCookies();
+	for(Cookie cookie:cookies) {
+		if(cookie.getName().equals("studentnamewhologgein")) {
+			nameofthestudentwhochangedthedetails=cookie.getValue();
+			break;
+		}
+	}
+	req.setAttribute("name", nameofthestudentwhochangedthedetails);
+	
+	
 	req.setAttribute("students", dao.getAllStudents());
 	RequestDispatcher dispatcher=req.getRequestDispatcher("display.jsp");
 	dispatcher.forward(req, resp);
